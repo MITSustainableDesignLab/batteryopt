@@ -1,4 +1,4 @@
-name: batterymodel
+name: batteryopt
 channels:
   - defaults
 dependencies:
