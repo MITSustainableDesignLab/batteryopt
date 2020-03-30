@@ -1,5 +1,7 @@
 import click
 
+from batteryopt import run_model, read_model_results
+
 
 @click.command()
 @click.argument("demand", type=click.File("r"))
@@ -40,20 +42,17 @@ import click
     type=click.FLOAT,
     help="battery maximum energy state of charge (Wh)",
 )
-@click.argument("out", type=click.File("w"), default="Pbought_aggregated.csv")
+@click.argument("out", type=click.Path(file_okay=True), default="Pbought_aggregated")
 def batteryopt(
     demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax, out
 ):
     """Runs battery opt"""
     from batteryopt import create_model
-    from pandas import Series
 
     model = create_model(
         demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax
     )
-    model.optimize()
+    model = run_model(model)
     # saving results to file
-    var = Series(
-        [str(v.X) for v in model.getVars() if v.varName == "P_grid"], name="P_grid"
-    )
-    var.to_csv(out, index_label="Time Step", line_terminator="\n")
+    df = read_model_results(model)
+    df.to_excel(out, index_label="Time Step")
