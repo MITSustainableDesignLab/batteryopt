@@ -24,7 +24,7 @@ import click
               type=click.FLOAT, help="battery maximum energy state of charge (Wh)")
 @click.argument("out", type=click.File("w"), default="Pbought_aggregated.csv")
 def batteryopt(p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax, out):
-    """Example script."""
+    """Runs battery opt"""
     from batteryopt import create_model
     from pandas import Series
 
