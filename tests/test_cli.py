@@ -1,6 +1,8 @@
-from unittest import TestCase
+from click.testing import CliRunner
+from batteryopt.cli import batteryopt
 
-
-class TestCli(TestCase):
+class TestCli:
     def test_batteryopt(self):
-        self.fail()
+        runner = CliRunner()
+        result = runner.invoke(batteryopt, ["output.csv"])
+        assert result.exit_code == 0

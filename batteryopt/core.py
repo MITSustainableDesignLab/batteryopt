@@ -178,12 +178,12 @@ def create_model(
     for t in range(0, 8760):
         c25 = model.addConstr(P_discharge[t] + P_grid[t], gb.GRB.EQUAL, P_dmd_unmet[t])
     model.update()
-    return model, P_grid
+    return model
 
 
 if __name__ == "__main__":
     # First, create the model
-    a, P_grid = create_model()
+    a = create_model()
 
     # Optimize
     a.optimize()

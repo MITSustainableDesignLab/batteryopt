@@ -9,7 +9,7 @@ setup(
     author="Jakub Tomasz Szczesniak",
     author_email="jakubszc@mit.edu",
     description="",
-    install_requires=["Click",],
+    install_requires=["Click", 'pandas'],
     entry_points="""
         [console_scripts]
         batteryopt=batteryopt.cli:batteryopt
