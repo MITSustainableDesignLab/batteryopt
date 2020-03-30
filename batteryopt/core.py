@@ -120,67 +120,115 @@ def create_model(
             [m.P_pv_export[t] * feed_in_t - m.P_grid[t] * m.P_elec[t] for t in m.t]
         ),
         sense=maximize,
+        doc="todo: document this method",
     )
 
     # constraints
-    m.c1 = Constraint(m.t, rule=lambda m, t: m.P_grid[t] >= 0)
-    m.c2 = Constraint(m.t, rule=lambda m, t: m.P_grid[t] <= m.P_dmd_unmet[t])
+    m.c1 = Constraint(
+        m.t, rule=lambda m, t: m.P_grid[t] >= 0, doc="todo: document this method"
+    )
+    m.c2 = Constraint(
+        m.t,
+        rule=lambda m, t: m.P_grid[t] <= m.P_dmd_unmet[t],
+        doc="todo: document this method",
+    )
     m.c3 = Constraint(
         m.t,
         rule=lambda m, t: m.P_dmd_unmet[t] == m.P_dmd[t] - m.P_pv[t]
         if m.P_dmd[t] > m.P_pv[t]
         else Constraint.Skip,
+        doc="todo: document this method",
     )
     m.c4 = Constraint(
         m.t,
         rule=lambda m, t: m.P_dmd_unmet[t] == 0
         if m.P_dmd[t] <= m.P_pv[t]
         else Constraint.Skip,
+        doc="todo: document this method",
     )
-    m.c5 = Constraint(m.t, rule=lambda m, t: m.P_pv_export[t] >= 0)
-    m.c6 = Constraint(expr=m.E_s[0] == E_batt_min)
-    m.c7 = Constraint(m.t, rule=lambda m, t: m.P_pv_export[t] <= m.P_pv_excess[t])
+    m.c5 = Constraint(
+        m.t, rule=lambda m, t: m.P_pv_export[t] >= 0, doc="todo: document this method"
+    )
+    m.c6 = Constraint(expr=m.E_s[0] == E_batt_min, doc="todo: document this method")
+    m.c7 = Constraint(
+        m.t,
+        rule=lambda m, t: m.P_pv_export[t] <= m.P_pv_excess[t],
+        doc="todo: document this method",
+    )
     m.c8 = Constraint(
         m.t,
         rule=lambda m, t: m.P_pv_excess[t] == m.P_pv[t] - m.P_dmd[t]
         if m.P_pv[t] > m.P_dmd[t]
         else Constraint.Skip,
+        doc="todo: document this method",
     )
     m.c9 = Constraint(
         m.t,
         rule=lambda m, t: m.P_pv_excess[t] == 0
         if m.P_pv[t] <= m.P_dmd[t]
         else Constraint.Skip,
+        doc="todo: document this method",
     )
-    m.c10 = Constraint(m.t, rule=lambda m, t: m.P_charge[t] >= m.Charging[t] * P_ch_min)
-    m.c11 = Constraint(m.t, rule=lambda m, t: m.P_charge[t] <= m.Charging[t] * P_ch_max)
+    m.c10 = Constraint(
+        m.t,
+        rule=lambda m, t: m.P_charge[t] >= m.Charging[t] * P_ch_min,
+        doc="todo: document this method",
+    )
+    m.c11 = Constraint(
+        m.t,
+        rule=lambda m, t: m.P_charge[t] <= m.Charging[t] * P_ch_max,
+        doc="todo: document this method",
+    )
     m.c12 = Constraint(
-        m.t, rule=lambda m, t: m.P_discharge[t] >= m.Discharging[t] * P_dis_min
+        m.t,
+        rule=lambda m, t: m.P_discharge[t] >= m.Discharging[t] * P_dis_min,
+        doc="todo: document this method",
     )
     m.c13 = Constraint(
-        m.t, rule=lambda m, t: m.P_discharge[t] <= m.Discharging[t] * P_dis_max
+        m.t,
+        rule=lambda m, t: m.P_discharge[t] <= m.Discharging[t] * P_dis_max,
+        doc="todo: document this method",
     )
-    m.c14 = Constraint(m.t, rule=lambda m, t: m.Charging[t] + m.Discharging[t] <= 1)
+    m.c14 = Constraint(
+        m.t,
+        rule=lambda m, t: m.Charging[t] + m.Discharging[t] <= 1,
+        doc="todo: document this method",
+    )
     m.c15 = Constraint(
         expr=sum(m.P_discharge[t] for t in m.t) <= sum(m.P_charge[t] for t in m.t),
+        doc="todo: document this method",
     )
     m.c16 = Constraint(
         m.tf,
         rule=lambda m, t: m.E_s[t]
         == m.E_s[t - 1] + (eff * m.P_charge[t] - (m.P_discharge[t] / eff_dis)),
+        doc="todo: document this method",
     )
     m.c17 = Constraint(
         m.t,
         rule=lambda m, t: m.E_s[0]
         == m.E_s[8759] + (eff * m.P_charge[0] - (m.P_discharge[0] / eff_dis)),
+        doc="todo: document this method",
     )
     m.c18 = Constraint(
-        m.t, rule=lambda m, t: m.P_pv_export[t] <= 50000000 * (1 - m.Buying[t])
+        m.t,
+        rule=lambda m, t: m.P_pv_export[t] <= 50000000 * (1 - m.Buying[t]),
+        doc="todo: document this method",
     )
-    m.c19 = Constraint(m.t, rule=lambda m, t: m.E_s[t] >= E_batt_min)
-    m.c20 = Constraint(m.t, rule=lambda m, t: m.E_s[t] <= E_batt_max)
-    m.c21 = Constraint(m.t, rule=lambda m, t: m.E_s[0] == m.E_s[8759])
-    m.c22 = Constraint(m.t, rule=lambda m, t: m.P_grid[t] <= 50000000 * m.Buying[t])
+    m.c19 = Constraint(
+        m.t, rule=lambda m, t: m.E_s[t] >= E_batt_min, doc="todo: document this method",
+    )
+    m.c20 = Constraint(
+        m.t, rule=lambda m, t: m.E_s[t] <= E_batt_max, doc="todo: document this method"
+    )
+    m.c21 = Constraint(
+        m.t, rule=lambda m, t: m.E_s[0] == m.E_s[8759], doc="todo: document this method"
+    )
+    m.c22 = Constraint(
+        m.t,
+        rule=lambda m, t: m.P_grid[t] <= 50000000 * m.Buying[t],
+        doc="todo: document this method",
+    )
     m.c23 = Constraint(
         m.t,
         rule=lambda m, t: m.P_dmd[t]
@@ -189,11 +237,18 @@ def create_model(
         - m.P_pv_export[t]
         - m.P_charge[t]
         + m.P_discharge[t],
+        doc="todo: document this method",
     )
-    m.c24 = Constraint(m.t, rule=lambda m, t: m.P_pv[t] >= m.P_pv_export[t])
-    # m.c26 = Constraint(m.t, rule=lambda m, t: m.P_dmd_unmet[t] >= m.P_grid[t])
+    m.c24 = Constraint(
+        m.t,
+        rule=lambda m, t: m.P_pv[t] >= m.P_pv_export[t],
+        doc="todo: document this method",
+    )
+    # m.c26 = Constraint(m.t, rule=lambda m, t: m.P_dmd_unmet[t] >= m.P_grid[t], doc="todo: document this method")
     m.c25 = Constraint(
-        m.t, rule=lambda m, t: m.P_discharge[t] + m.P_grid[t] == m.P_dmd_unmet[t]
+        m.t,
+        rule=lambda m, t: m.P_discharge[t] + m.P_grid[t] == m.P_dmd_unmet[t],
+        doc="todo: document this method",
     )
     return m
 
