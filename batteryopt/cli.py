@@ -93,4 +93,5 @@ def batteryopt(
     # saving results to file
     df = read_model_results(model)
     df.to_excel(out, index_label="Time Step")
+    print(f"solver logs available at {Path(model.optim.options['logfile']).abspath()}")
     print(f"results file generated at {Path(out).abspath()}")
