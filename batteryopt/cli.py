@@ -42,15 +42,22 @@ from batteryopt import run_model, read_model_results
     type=click.FLOAT,
     help="battery maximum energy state of charge (Wh)",
 )
+@click.option(
+    "--m",
+    default=50000000,
+    type=click.FLOAT,
+    help="an arbitrarily chosen number that is big enough to ensure a feasible "
+    "solution",
+)
 @click.argument("out", type=click.Path(file_okay=True), default="Pbought_aggregated")
 def batteryopt(
-    demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax, out
+    demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax, m, out
 ):
     """Runs battery opt"""
     from batteryopt import create_model
 
     model = create_model(
-        demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax
+        demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax, m
     )
     model = run_model(model)
     # saving results to file
