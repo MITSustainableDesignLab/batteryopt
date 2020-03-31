@@ -124,7 +124,7 @@ def create_model(
             [m.P_pv_export[t] * feed_in_t - m.P_grid[t] * m.P_elec[t] for t in m.t]
         ),
         sense=maximize,
-        doc="todo: document this method",
+        doc="",  # todo: document this method
     )
 
     # constraints
