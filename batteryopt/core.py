@@ -233,11 +233,12 @@ def create_model(
         doc="todo: document this method",
     )
     m.c19 = Constraint(
-        m.t, rule=lambda m, t: m.E_s[t] >= E_batt_min, doc="todo: document this method",
+        m.t,
+        rule=lambda m, t: (E_batt_min, m.E_s[t], E_batt_max),
+        doc="The state of charge of the battery is between its minimum and maximum "
+        "values at each time",
     )
-    m.c20 = Constraint(
-        m.t, rule=lambda m, t: m.E_s[t] <= E_batt_max, doc="todo: document this method"
-    )
+
     m.c21 = Constraint(
         m.t, rule=lambda m, t: m.E_s[0] == m.E_s[8759], doc="todo: document this method"
     )
