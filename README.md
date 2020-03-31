@@ -4,9 +4,11 @@ batteryopt is a battery operation optimization tool developed by Jakub Szcześni
 
 # Installation
 
-`git clone https://github.com/MITSustainableDesignLab/batteryopt.git`
-`cd batteryopt`
-`python setup.py install`
+```
+git clone https://github.com/MITSustainableDesignLab/batteryopt.git
+cd batteryopt
+python setup.py install
+```
 
 # Usage
 
