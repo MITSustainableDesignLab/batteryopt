@@ -125,74 +125,91 @@ def create_model(
 
     # constraints
     m.c1 = Constraint(
-        m.t, rule=lambda m, t: m.P_grid[t] >= 0, doc="todo: document this method"
+        m.t,
+        rule=lambda m, t: m.P_grid[t] >= 0,
+        doc="Energy imported from the grid at each hour is always bigger or equal "
+        "to zero at each hour",
     )
     m.c2 = Constraint(
         m.t,
         rule=lambda m, t: m.P_grid[t] <= m.P_dmd_unmet[t],
-        doc="todo: document this method",
+        doc="Energy imported from the grid at each hour is always smaller or equal "
+        "to the unmet electricity demand at each hour",
     )
     m.c3 = Constraint(
         m.t,
         rule=lambda m, t: m.P_dmd_unmet[t] == m.P_dmd[t] - m.P_pv[t]
         if m.P_dmd[t] > m.P_pv[t]
         else Constraint.Skip,
-        doc="todo: document this method",
+        doc="If the total demand is bigger than the power supplied by PV, the unmet "
+        "demand is equal to the difference of total demand and the power supplied "
+        "by PV",
     )
     m.c4 = Constraint(
         m.t,
         rule=lambda m, t: m.P_dmd_unmet[t] == 0
         if m.P_dmd[t] <= m.P_pv[t]
         else Constraint.Skip,
-        doc="todo: document this method",
+        doc="If the total demand is smaller or equal to the power supplied by PV, "
+        "the unmet demand is equal zero – the demand is met by the electricity "
+        "produced by PV",
     )
     m.c5 = Constraint(
-        m.t, rule=lambda m, t: m.P_pv_export[t] >= 0, doc="todo: document this method"
+        m.t,
+        rule=lambda m, t: m.P_pv_export[t] >= 0,
+        doc="Energy sold to grid is always equal or bigger than zero",
     )
     m.c6 = Constraint(expr=m.E_s[0] == E_batt_min, doc="todo: document this method")
     m.c7 = Constraint(
         m.t,
         rule=lambda m, t: m.P_pv_export[t] <= m.P_pv_excess[t],
-        doc="todo: document this method",
+        doc="Energy sold to grid is always smaller or equal to the excess energy",
     )
     m.c8 = Constraint(
         m.t,
         rule=lambda m, t: m.P_pv_excess[t] == m.P_pv[t] - m.P_dmd[t]
         if m.P_pv[t] > m.P_dmd[t]
         else Constraint.Skip,
-        doc="todo: document this method",
+        doc="If the energy produced by PV is bigger than the total demand, the "
+        "excess energy is defined as a difference between the energy produced "
+        "by PV and the total demand",
     )
     m.c9 = Constraint(
         m.t,
         rule=lambda m, t: m.P_pv_excess[t] == 0
         if m.P_pv[t] <= m.P_dmd[t]
         else Constraint.Skip,
-        doc="todo: document this method",
+        doc="If the energy produced by PV is smaller or equal to the total demand, "
+        "the excess energy is zero",
     )
     m.c10 = Constraint(
         m.t,
         rule=lambda m, t: m.P_charge[t] >= m.Charging[t] * P_ch_min,
-        doc="todo: document this method",
+        doc="When the battery is charging, the charging power must be bigger or equal "
+        "to the minimum charging power",
     )
     m.c11 = Constraint(
         m.t,
         rule=lambda m, t: m.P_charge[t] <= m.Charging[t] * P_ch_max,
-        doc="todo: document this method",
+        doc="When the battery is charging, the charging power must be smaller or equal"
+        " the maximum charging power",
     )
     m.c12 = Constraint(
         m.t,
         rule=lambda m, t: m.P_discharge[t] >= m.Discharging[t] * P_dis_min,
-        doc="todo: document this method",
+        doc="When the battery is discharging, the discharging power must be bigger or "
+        "equal to the minimum discharging power",
     )
     m.c13 = Constraint(
         m.t,
         rule=lambda m, t: m.P_discharge[t] <= m.Discharging[t] * P_dis_max,
-        doc="todo: document this method",
+        doc="When the battery is discharging, the discharging power smaller or equal "
+        "the maximum discharging power",
     )
     m.c14 = Constraint(
         m.t,
         rule=lambda m, t: m.Charging[t] + m.Discharging[t] <= 1,
-        doc="todo: document this method",
+        doc="The battery cannot charge and discharge simultaneously",
     )
     m.c15 = Constraint(
         expr=sum(m.P_discharge[t] for t in m.t) <= sum(m.P_charge[t] for t in m.t),
