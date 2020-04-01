@@ -13,3 +13,17 @@ python setup.py install
 # Usage
 
 Type `batteryopt --help` to acces the command line options
+
+# Output
+
+batteryopt outputs an Excel file with the model Variables for each time step of the year:
+
+|    |   t |   tf |   M |   P_dmd |    P_elec |   P_pv |   Buying |   Charging |   Discharging |   E_s |   P_charge |   P_discharge |   P_dmd_unmet |   P_grid |   P_pv_excess |   P_pv_export |
+|---:|----:|-----:|----:|--------:|----------:|-------:|---------:|-----------:|--------------:|------:|-----------:|--------------:|--------------:|---------:|--------------:|--------------:|
+|  0 |   1 |  nan | nan | 60536.5 | 0.0002624 |      0 |        1 |          0 |             0 | 20000 |         -0 |            -0 |       60536.5 |  60536.5 |             0 |             0 |
+|  1 |   1 |    1 | nan | 60536.5 | 0.0002624 |      0 |        1 |          0 |             0 | 20000 |         -0 |             0 |       60536.5 |  60536.5 |             0 |             0 |
+|  2 |   1 |    1 | nan | 60536.5 | 0.0002624 |      0 |        1 |          0 |             0 | 20000 |         -0 |             0 |       60536.5 |  60536.5 |             0 |             0 |
+|  3 |   1 |    1 | nan | 60536.5 | 0.0002624 |      0 |        1 |          0 |             0 | 20000 |         -0 |             0 |       60536.5 |  60536.5 |             0 |             0 |
+|  4 |   1 |    1 | nan | 60536.5 | 0.0002624 |      0 |        1 |          0 |             0 | 20000 |         -0 |             0 |       60536.5 |  60536.5 |             0 |             0 |
+
+The column names are:
