@@ -116,10 +116,8 @@ def create_model(
 
     # objective function
     m.obj = Objective(
-        expr=sum(
-            [m.P_pv_export[t] * feed_in_t - m.P_grid[t] * m.P_elec[t] for t in m.t]
-        ),
-        sense=maximize,
+        expr=sum(m.P_grid[t] * m.P_elec[t] - m.P_pv_export[t] * feed_in_t for t in m.t),
+        sense=minimize,
     )
 
     # constraints
