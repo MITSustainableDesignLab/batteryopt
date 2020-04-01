@@ -4,6 +4,7 @@ from pandas import DataFrame
 from path import Path
 from pyomo.environ import *
 from pyomo.opt import SolverFactory
+import numpy as np
 
 from batteryopt import list_entities, get_entity
 
@@ -247,3 +248,54 @@ def read_model_results(model):
     df = DataFrame(result_cache)
 
     return df
+
+
+def decision_tree(demand_csv, pvgen_csv, E_batt_min=20000, E_batt_max=100000):
+
+    demand = pd.read_csv(demand_csv).SUM_DEMAND
+    generation = pd.read_csv(pvgen_csv).SUM_GENERATION
+    E_s = np.zeros(8760)
+    E_s[0] = E_batt_min  # initial battery state of charge
+    P_pv_export = np.zeros(8760)
+    P_discharge = np.zeros(8760)
+    P_charge = np.zeros(8760)
+
+    for i in range(0, 8760):
+        # Demand satisfied?
+        if generation[i] >= demand[i]:
+            # Charging
+            # More electricity available?
+            potential_charge = generation[i] - demand[i]
+            if potential_charge > 0:
+                # SoC is lower than capacity of battery
+                if E_s[i] < E_batt_max:
+                    if potential_charge <= E_batt_max - E_s[i]:
+                        P_charge[i] = potential_charge
+                    else:
+                        P_pv_export[i] = potential_charge - (E_batt_max - E_s[i])
+                        P_charge[i] = E_batt_max - E_s[i]
+                else:
+                    P_pv_export[i] = potential_charge
+            else:
+                pass  # take nothing
+        else:
+            # Discharging
+            if E_s[i] > E_batt_min:  # If there is capacity
+                av = available_from_bat(E_s, i, E_batt_min)
+                P_discharge[i] = -av if av <= demand[i] else -demand[i]
+            else:
+                pass
+        update_soc(E_s, i, P_discharge[i], P_charge[i])
+    return demand, generation, E_s, P_pv_export, P_discharge, P_charge
+
+
+def update_soc(E_s, i, P_discharge, P_charge):
+    # todo Check i-1, to fix the state of charge
+    if i > 0:
+        E_s[i] = E_s[i - 1] + P_discharge + P_charge
+
+
+def available_from_bat(E_s, i, E_batt_min):
+    """calculates the availble discharging capacity of the battery"""
+    av = E_s[i] - E_batt_min
+    return av
