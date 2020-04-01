@@ -120,10 +120,8 @@ def create_model(
 
     # objective function
     m.obj = Objective(
-        expr=sum(
-            [m.P_pv_export[t] * feed_in_t - m.P_grid[t] * m.P_elec[t] for t in m.t]
-        ),
-        sense=maximize,
+        expr=sum(m.P_grid[t] * m.P_elec[t] - m.P_pv_export[t] * feed_in_t for t in m.t),
+        sense=minimize,
         doc="",  # todo: document this method
     )
 
@@ -289,8 +287,8 @@ def create_model(
 def setup_solver(optim, logfile="solver.log"):
     """
     Args:
-        optim:
-        logfile:
+        optim (SolverFactoryClass): The SolverFactoryClass object.
+        logfile (str): the path/name of the log file.
     """
     if optim.name == "gurobi":
         # reference with list of option names
@@ -316,9 +314,9 @@ def setup_solver(optim, logfile="solver.log"):
 
 def run_model(model, solver="gurobi"):
     # solve model and read results
-    optim = SolverFactory(solver)  # cplex, glpk, gurobi, ...
-    optim = setup_solver(optim, logfile="log_filename.txt")
-    result = optim.solve(model, tee=True)
+    model.optim = SolverFactory(solver)  # cplex, glpk, gurobi, ...
+    model.optim = setup_solver(model.optim, logfile=f"{solver}_run.txt")
+    result = model.optim.solve(model, tee=True)
     assert str(result.solver.termination_condition) == "optimal"
     return model
 
