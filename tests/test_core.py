@@ -1,5 +1,6 @@
 from batteryopt import create_model, run_model, read_model_results
 import pytest
+import pandas as pd
 
 
 class TestCore:
@@ -7,8 +8,11 @@ class TestCore:
     def model(self):
         """Creates a model from data and yields it to other tests"""
         # First, create the model
+        demand = pd.read_csv("../data/demand_aggregated.csv").SUM_DEMAND
+        pvgen = pd.read_csv("../data/PV_generation_aggregated.csv").SUM_GENERATION
+
         model = create_model(
-            "../data/demand_aggregated.csv", "../data/PV_generation_aggregated.csv"
+            demand, pvgen
         )
         yield model
 

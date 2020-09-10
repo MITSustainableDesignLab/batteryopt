@@ -9,8 +9,8 @@ from batteryopt import list_entities, get_entity
 
 
 def create_model(
-    demand_csv,
-    pvgen_csv,
+    demand,
+    generation,
     price_of_el=0.0002624,
     feed_in_t=0.0000791,
     P_ch_min=100,
@@ -24,8 +24,8 @@ def create_model(
 ):
     """
     Args:
-        demand_csv (PathLike): file containing the electricity demand (W).
-        pvgen_csv (PathLike): file containing the PV generation (W).
+        demand (pd.Series): Series with the electricity demand (W).
+        generation (pd.Series): Series with the PV generation (W).
         price_of_el (float or PathLike): If float, a single price is used for all
             time steps. If a .csv is passed, the column named "PRICE" is used. Units
             are $/Wh.
@@ -40,36 +40,36 @@ def create_model(
         E_batt_max: battery maximum energy state of charge (Wh).
     """
     m = ConcreteModel()
+    period = len(demand)  # period lenght in hours
+
+    # Sets
+    m.t = Set(initialize=list(range(0, period)), ordered=True, doc="Set of timesteps")
+    m.tf = Set(
+        within=m.t,
+        initialize=list(range(0, period))[1:],
+        ordered=True,
+        doc="Set of modelled time steps",
+    )
 
     if isinstance(price_of_el, (str, Path)):
         # Use file as electricity price
         price = pd.read_csv(price_of_el)  # read hourly electricity price from csv file
         price_of_el = price.PRICE.to_dict()
     else:
-        price_of_el = {k: price_of_el for k in range(0, 8760)}
-
-    # Sets
-    m.t = Set(initialize=list(range(0, 8760)), ordered=True, doc="Set of timesteps")
-    m.tf = Set(
-        within=m.t,
-        initialize=list(range(0, 8760))[1:],
-        ordered=True,
-        doc="Set of modelled time steps",
-    )
+        price_of_el = {k: price_of_el for k in range(0, period)}
 
     # Parameters
-    generation = pd.read_csv(pvgen_csv).SUM_GENERATION
-    m.P_pv = Param(
-        m.t,
-        initialize=generation.to_dict(),
-        doc="Generation from installed PV at each hour",
-    )
-    demand = pd.read_csv(demand_csv).SUM_DEMAND
     m.P_dmd = Param(
         m.t, initialize=demand.to_dict(), doc="Electricity demand at each time step",
     )
     m.P_elec = Param(
         m.t, initialize=price_of_el, doc="Price of electricity at each time step",
+    )
+
+    m.P_pv = Param(
+        m.t,
+        initialize=generation.to_dict(),
+        doc="Generation from installed PV at each hour",
     )
 
     # Variables

@@ -85,6 +85,10 @@ def batteryopt(
     batteryopt data/demand_aggregated.csv data/PV_generation_aggregated.csv --p 0.00085
     """
     from batteryopt import create_model
+    import pandas as pd
+
+    demand = pd.read_csv(demand).SUM_DEMAND
+    pvgen = pd.read_csv(pvgen).SUM_GENERATION
 
     model = create_model(
         demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax
