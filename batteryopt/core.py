@@ -40,7 +40,7 @@ def create_model(
         E_batt_max: battery maximum energy state of charge (Wh).
     """
     m = ConcreteModel()
-    period = len(demand)  # period lenght in hours
+    period = len(demand)  # period lenght in storage_hours
 
     # Sets
     m.t = Set(initialize=list(range(0, period)), ordered=True, doc="Set of timesteps")
@@ -60,15 +60,21 @@ def create_model(
 
     # Parameters
     m.P_dmd = Param(
-        m.t, initialize=demand.to_dict(), doc="Electricity demand at each time step",
+        m.t,
+        initialize=demand.reset_index(drop=True).to_dict(),  # reset_index to remove
+        # datetime index
+        doc="Electricity demand at each time step",
     )
     m.P_elec = Param(
-        m.t, initialize=price_of_el, doc="Price of electricity at each time step",
+        m.t,
+        initialize=price_of_el,
+        doc="Price of electricity at each time step",
     )
 
     m.P_pv = Param(
         m.t,
-        initialize=generation.to_dict(),
+        initialize=generation.reset_index(drop=True).to_dict(),  # reset_index to remove
+        # datetime index
         doc="Generation from installed PV at each hour",
     )
 
@@ -94,7 +100,9 @@ def create_model(
         m.t, domain=Reals, doc="excess electricity from PV at each time step (W)"
     )
     m.E_s = Var(
-        m.t, domain=Reals, doc="battery energy state of charge at each time step (Wh)",
+        m.t,
+        domain=Reals,
+        doc="battery energy state of charge at each time step (Wh)",
     )
     m.Buying = Var(
         m.t,
@@ -170,14 +178,14 @@ def create_model(
     m.c17 = Constraint(
         m.t,
         rule=lambda m, t: m.E_s[0]
-        == m.E_s[8759] + (eff * m.P_charge[0] - (m.P_discharge[0] / eff_dis)),
+        == m.E_s[period - 1] + (eff * m.P_charge[0] - (m.P_discharge[0] / eff_dis)),
     )
     m.c18 = Constraint(
         m.t, rule=lambda m, t: m.P_pv_export[t] <= 50000000 * (1 - m.Buying[t])
     )
     m.c19 = Constraint(m.t, rule=lambda m, t: m.E_s[t] >= E_batt_min)
     m.c20 = Constraint(m.t, rule=lambda m, t: m.E_s[t] <= E_batt_max)
-    m.c21 = Constraint(m.t, rule=lambda m, t: m.E_s[0] == m.E_s[8759])
+    m.c21 = Constraint(m.t, rule=lambda m, t: m.E_s[0] == m.E_s[period - 1])
     m.c22 = Constraint(m.t, rule=lambda m, t: m.P_grid[t] <= 50000000 * m.Buying[t])
     m.c23 = Constraint(
         m.t,
