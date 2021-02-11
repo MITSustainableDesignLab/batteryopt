@@ -5,7 +5,7 @@ import pyomo.core as pyomo
 
 
 def get_entity(instance, name):
-    """ Retrieve values (or duals) for an entity in a model instance.
+    """Retrieve values (or duals) for an entity in a model instance.
 
     Args:
         instance: a Pyomo ConcreteModel instance
@@ -116,7 +116,7 @@ def get_entity(instance, name):
 
 
 def get_entities(instance, names):
-    """ Return one DataFrame with entities in columns and a common index.
+    """Return one DataFrame with entities in columns and a common index.
 
     Works only on entities that share a common domain (set or set_tuple), which
     is used as index of the returned DataFrame.
@@ -147,7 +147,7 @@ def get_entities(instance, names):
 
 
 def list_entities(instance, entity_type):
-    """ Return list of sets, params, variables, constraints or objectives
+    """Return list of sets, params, variables, constraints or objectives
 
     Args:
         instance: a Pyomo ConcreteModel object
@@ -205,7 +205,7 @@ def list_entities(instance, entity_type):
 
 
 def _get_onset_names(entity):
-    """ Return a list of domain set names for a given model entity
+    """Return a list of domain set names for a given model entity
 
     Args:
         entity: a member entity (i.e. a Set, Param, Var, Objective, Constraint)

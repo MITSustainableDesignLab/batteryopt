@@ -93,7 +93,7 @@ def batteryopt(
     model = create_model(
         demand, pvgen, p, f, cmin, cmax, dmin, dmax, ceff, deff, smin, smax
     )
-    model = run_model(model)
+    model = run_model(model, solver="gurobi")
     # saving results to file
     df = read_model_results(model)
     df.to_excel(out, index_label="Time Step")
