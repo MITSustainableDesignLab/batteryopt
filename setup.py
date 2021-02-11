@@ -22,6 +22,7 @@ setup(
     author_email="jakubszc@mit.edu",
     description="battery operation optimization",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     install_requires=install_requires,
     entry_points="""
         [console_scripts]
